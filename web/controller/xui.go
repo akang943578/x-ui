@@ -24,6 +24,7 @@ func (a *XUIController) initRouter(g *gin.RouterGroup) {
 	g.GET("/", a.index)
 	g.GET("/inbounds", a.inbounds)
 	g.GET("/setting", a.setting)
+	g.GET("/inbounds/subscribe", a.inboundsSubscribe)
 
 	a.inboundController = NewInboundController(g)
 	a.settingController = NewSettingController(g)
@@ -35,6 +36,10 @@ func (a *XUIController) index(c *gin.Context) {
 
 func (a *XUIController) inbounds(c *gin.Context) {
 	html(c, "inbounds.html", "入站列表", nil)
+}
+
+func (a *XUIController) inboundsSubscribe(c *gin.Context) {
+	html(c, "subscribe.html", "", nil)
 }
 
 func (a *XUIController) setting(c *gin.Context) {

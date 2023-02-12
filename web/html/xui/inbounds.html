@@ -44,7 +44,19 @@
                 <transition name="list" appear>
                     <a-card hoverable>
                         <div slot="title">
-                            <a-button type="primary" icon="plus" @click="openAddInbound"></a-button>
+                            <a-button type="primary" style="float:left;margin-left:5px;margin-right:5px;" icon="plus" @click="openAddInbound">添加入站</a-button>
+                            <a-button type="primary" disabled="true" class="btn" style="float:right;margin-left:5px;margin-right:5px;" icon="copy" @click="copySubscriptionLink">复制订阅链接</a-button>
+                            <a-button type="primary" style="float:right;margin-left:5px;margin-right:5px;" icon="copy" @click="downloadSubscriptionFile">下载订阅文件</a-button>
+                            <a-button type="primary" style="float:right;margin-left:5px;margin-right:5px;" icon="download" @click="exportNodeLinks">导出节点链接</a-button>
+                            <a-button type="primary" style="float:right;margin-left:5px;margin-right:5px;" icon="download" @click="exportConfigs">导出入站数据</a-button>
+                            <a-upload style="float:right;margin-left:5px;margin-right:5px;"
+                                    accept=".txt"
+                                    :show-upload-list="false"
+                                    :before-upload="importConfigs"
+                                    :multiple="false"
+                            >
+                                <a-button type="primary" icon="upload"> 导入入站数据 </a-button>
+                            </a-upload>
                         </div>
 <!--                        <a-input v-model="searchKey" placeholder="搜索" autofocus style="max-width: 300px"></a-input>-->
                         <a-table :columns="columns" :row-key="dbInbound => dbInbound.id"
@@ -181,6 +193,7 @@
             inbounds: [],
             dbInbounds: [],
             searchKey: '',
+            clipboard: null,
         },
         methods: {
             loading(spinning=true) {
@@ -242,6 +255,89 @@
                         inModal.close();
                     }
                 });
+            },
+            async exportConfigs() {
+                const inboundList = await this.getInboundList();
+                const msg_json = JSON.stringify(inboundList.obj, null, 2);
+
+                this.downloadFile('configs.txt', msg_json);
+            },
+
+            async getInboundList() {
+                return await HttpUtil.post('/xui/inbound/list');
+            },
+            async exportNodeLinks() {
+                const nodeLinks = await this.getNodeLinks();
+                this.downloadFile('nodeLinks.txt', nodeLinks);
+            },
+            async getNodeLinks() {
+                const inboundList = await this.getInboundList();
+
+                const nodeLinks = [];
+                for (const node of inboundList.obj) {
+                    let dbInbound = new DBInbound(node);
+                    let nodeLink = dbInbound.genLink();
+                    nodeLinks.push(nodeLink);
+                }
+                return nodeLinks.join('\n');
+            },
+            async copySubscriptionLink() {
+                if (this.clipboard == null) {
+                    app.$nextTick(() => {
+                        this.clipboard = new ClipboardJS('.btn', {
+                            text: () => location.href + "/subscribe",
+                        });
+                        this.clipboard.on('success', () => app.$message.success('复制成功'));
+                    });
+                }
+            },
+            async downloadSubscriptionFile() {
+                const nodeLinks = await this.getNodeLinks();
+                let msg_base64 = base64(nodeLinks);
+
+                this.downloadFile('subscriptionLink', msg_base64);
+            },
+            downloadFile(name, msg) {
+                const blob = new Blob([msg]);
+                const url = window.URL.createObjectURL(blob);
+                const aLink = document.createElement('a');
+                aLink.style.display = 'none';
+                aLink.href = url;
+                aLink.setAttribute('download', name);
+                document.body.appendChild(aLink);
+                aLink.click();
+                document.body.removeChild(aLink); // 下载完成移除元素
+                window.URL.revokeObjectURL(url); // 释放掉blob对象
+            },
+            importConfigs(file, fileList) { // 自定义上传事件
+                let that = this;
+                let reader = new FileReader();
+                reader.onload = async function(){
+                    const content = reader.result;
+                    await that.batchImport(content);
+                };
+                reader.readAsText(file);
+                return false; // 《《= 关键 阻止upload默认上传事件
+            },
+            async batchImport(content) {
+                try{
+                    let configJsonArray = JSON.parse(content);
+                    for (const configJson of configJsonArray) {
+                        configJson['port'] = RandomUtil.randomIntRange(10000, 60000);
+                        configJson['settings'] = JSON.parse(configJson.settings);
+                        configJson['streamSettings'] = JSON.parse(configJson.streamSettings);
+                        configJson['sniffing'] = JSON.parse(configJson.sniffing);
+
+                        let dbInbound = new DBInbound(configJson);
+                        let inbound = Inbound.fromJson(configJson);
+
+                        await this.addInbound(inbound, dbInbound);
+                    }
+                    app.$message.success('导入数据成功');
+                }
+                catch(e){
+                    app.$message.error('导入数据失败: ' + e.message);
+                }
             },
             openEditInbound(dbInbound) {
                 const inbound = dbInbound.toInbound();

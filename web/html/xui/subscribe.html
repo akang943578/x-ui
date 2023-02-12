@@ -1,0 +1,43 @@
+{{template "js" .}}
+<script>
+    const subscribeApp = new Vue({
+        el: '#subscribe',
+        methods: {
+            async getInboundList() {
+                return await HttpUtil.post('/xui/inbound/list');
+            },
+            async getNodeLinks() {
+                const inboundList = await this.getInboundList();
+
+                const nodeLinks = [];
+                for (const node of inboundList.obj) {
+                    let dbInbound = new DBInbound(node);
+                    let nodeLink = dbInbound.genLink();
+                    nodeLinks.push(nodeLink);
+                }
+                return nodeLinks.join('\n');
+            },
+            async downloadSubscriptionFile() {
+                const nodeLinks = await this.getNodeLinks();
+                let msg_base64 = base64(nodeLinks);
+
+                this.downloadFile('subscriptionLink', msg_base64);
+            },
+            downloadFile(name, msg) {
+                const blob = new Blob([msg]);
+                const url = window.URL.createObjectURL(blob);
+                const aLink = document.createElement('a');
+                aLink.style.display = 'none';
+                aLink.href = url;
+                aLink.setAttribute('download', name);
+                document.body.appendChild(aLink);
+                aLink.click();
+                document.body.removeChild(aLink); // 下载完成移除元素
+                window.URL.revokeObjectURL(url); // 释放掉blob对象
+            },
+        },
+        async mounted() {
+            await this.downloadSubscriptionFile();
+        },
+    });
+</script>
