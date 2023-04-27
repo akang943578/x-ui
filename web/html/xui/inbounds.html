@@ -27,15 +27,15 @@
                     <a-card hoverable style="margin-bottom: 20px;">
                         <a-row>
                             <a-col :xs="24" :sm="24" :lg="12">
-                                总上传 / 下载：
+                                Total up / down：
                                 <a-tag color="green">[[ sizeFormat(total.up) ]] / [[ sizeFormat(total.down) ]]</a-tag>
                             </a-col>
                             <a-col :xs="24" :sm="24" :lg="12">
-                                总用量：
+                                Total traffic：
                                 <a-tag color="green">[[ sizeFormat(total.up + total.down) ]]</a-tag>
                             </a-col>
                             <a-col :xs="24" :sm="24" :lg="12">
-                                入站数量：
+                                Inbounds count：
                                 <a-tag color="green">[[ dbInbounds.length ]]</a-tag>
                             </a-col>
                         </a-row>
@@ -44,18 +44,18 @@
                 <transition name="list" appear>
                     <a-card hoverable>
                         <div slot="title">
-                            <a-button type="primary" style="float:left;margin-left:5px;margin-right:5px;" icon="plus" @click="openAddInbound">添加入站</a-button>
-                            <a-button type="primary" disabled="true" class="btn" style="float:right;margin-left:5px;margin-right:5px;" icon="copy" @click="copySubscriptionLink">复制订阅链接</a-button>
-                            <a-button type="primary" style="float:right;margin-left:5px;margin-right:5px;" icon="copy" @click="downloadSubscriptionFile">下载订阅文件</a-button>
-                            <a-button type="primary" style="float:right;margin-left:5px;margin-right:5px;" icon="download" @click="exportNodeLinks">导出节点链接</a-button>
-                            <a-button type="primary" style="float:right;margin-left:5px;margin-right:5px;" icon="download" @click="exportConfigs">导出入站数据</a-button>
+                            <a-button type="primary" style="float:left;margin-left:5px;margin-right:5px;" icon="plus" @click="openAddInbound">Add Inbound</a-button>
+                            <a-button type="primary" disabled="true" class="btn" style="float:right;margin-left:5px;margin-right:5px;" icon="copy" @click="copySubscriptionLink">Copy subscription link</a-button>
+                            <a-button type="primary" style="float:right;margin-left:5px;margin-right:5px;" icon="copy" @click="downloadSubscriptionFile">Download subscription file</a-button>
+                            <a-button type="primary" style="float:right;margin-left:5px;margin-right:5px;" icon="download" @click="exportNodeLinks">Export nodes link</a-button>
+                            <a-button type="primary" style="float:right;margin-left:5px;margin-right:5px;" icon="download" @click="exportConfigs">Export inbounds data</a-button>
                             <a-upload style="float:right;margin-left:5px;margin-right:5px;"
                                     accept=".txt"
                                     :show-upload-list="false"
                                     :before-upload="importConfigs"
                                     :multiple="false"
                             >
-                                <a-button type="primary" icon="upload"> 导入入站数据 </a-button>
+                                <a-button type="primary" icon="upload"> Import inbounds data </a-button>
                             </a-upload>
                         </div>
 <!--                        <a-input v-model="searchKey" placeholder="搜索" autofocus style="max-width: 300px"></a-input>-->
@@ -67,20 +67,20 @@
                                  @change="() => getDBInbounds()">
                             <template slot="action" slot-scope="text, dbInbound">
                                 <a-dropdown :trigger="['click']">
-                                    <a @click="e => e.preventDefault()">操作</a>
+                                    <a @click="e => e.preventDefault()">Option</a>
                                     <a-menu slot="overlay" @click="a => clickAction(a, dbInbound)">
                                         <a-menu-item v-if="dbInbound.hasLink()" key="qrcode">
-                                            <a-icon type="qrcode"></a-icon>二维码
+                                            <a-icon type="qrcode"></a-icon>QR Code
                                         </a-menu-item>
                                         <a-menu-item key="edit">
-                                            <a-icon type="edit"></a-icon>编辑
+                                            <a-icon type="edit"></a-icon>Edit
                                         </a-menu-item>
                                         <a-menu-item key="resetTraffic">
-                                            <a-icon type="retweet"></a-icon>重置流量
+                                            <a-icon type="retweet"></a-icon>Reset traffic
                                         </a-menu-item>
                                         <a-menu-item key="delete">
                                             <span style="color: #FF4D4F">
-                                                <a-icon type="delete"></a-icon>删除
+                                                <a-icon type="delete"></a-icon>Delete
                                             </span>
                                         </a-menu-item>
                                     </a-menu>
@@ -95,10 +95,10 @@
                                     <a-tag v-if="dbInbound.up + dbInbound.down < dbInbound.total" color="cyan">[[ sizeFormat(dbInbound.total) ]]</a-tag>
                                     <a-tag v-else color="red">[[ sizeFormat(dbInbound.total) ]]</a-tag>
                                 </template>
-                                <a-tag v-else color="green">无限制</a-tag>
+                                <a-tag v-else color="green">No limitation</a-tag>
                             </template>
                             <template slot="settings" slot-scope="text, dbInbound">
-                                <a-button type="link" @click="showInfo(dbInbound)">查看</a-button>
+                                <a-button type="link" @click="showInfo(dbInbound)">Check</a-button>
                             </template>
                             <template slot="stream" slot-scope="text, dbInbound, index">
                                 <template v-if="dbInbound.isVMess || dbInbound.isVLess || dbInbound.isTrojan || dbInbound.isSS">
@@ -106,7 +106,7 @@
                                     <a-tag v-if="inbounds[index].stream.isTls" color="blue">tls</a-tag>
                                     <a-tag v-if="inbounds[index].stream.isXTls" color="blue">xtls</a-tag>
                                 </template>
-                                <template v-else>无</template>
+                                <template v-else>None</template>
                             </template>
                             <template slot="enable" slot-scope="text, dbInbound">
                                 <a-switch v-model="dbInbound.enable" @change="switchEnable(dbInbound)"></a-switch>
@@ -120,7 +120,7 @@
                                         [[ DateUtil.formatMillis(dbInbound.expiryTime) ]]
                                     </a-tag>
                                 </template>
-                                <a-tag v-else color="green">无限期</a-tag>
+                                <a-tag v-else color="green">No limitation</a-tag>
                             </template>
                         </a-table>
                     </a-card>
@@ -133,12 +133,12 @@
 <script>
 
     const columns = [{
-        title: "操作",
+        title: "Option",
         align: 'center',
         width: 30,
         scopedSlots: { customRender: 'action' },
     }, {
-        title: "启用",
+        title: "Enable",
         align: 'center',
         width: 40,
         scopedSlots: { customRender: 'enable' },
@@ -148,37 +148,37 @@
         dataIndex: "id",
         width: 30,
     }, {
-        title: "备注",
+        title: "Note",
         align: 'center',
         width: 100,
         dataIndex: "remark",
     }, {
-        title: "协议",
+        title: "Protocol",
         align: 'center',
         width: 60,
         scopedSlots: { customRender: 'protocol' },
     }, {
-        title: "端口",
+        title: "Port",
         align: 'center',
         dataIndex: "port",
         width: 60,
     }, {
-        title: "流量↑|↓",
+        title: "Traffic ↑|↓",
         align: 'center',
         width: 150,
         scopedSlots: { customRender: 'traffic' },
     }, {
-        title: "详细信息",
+        title: "Details",
         align: 'center',
         width: 40,
         scopedSlots: { customRender: 'settings' },
     }, {
-        title: "传输配置",
+        title: "Transportation config",
         align: 'center',
         width: 60,
         scopedSlots: { customRender: 'stream' },
     }, {
-        title: "到期时间",
+        title: "Expiration date",
         align: 'center',
         width: 80,
         scopedSlots: { customRender: 'expiryTime' },
@@ -247,8 +247,8 @@
             },
             openAddInbound() {
                 inModal.show({
-                    title: '添加入站',
-                    okText: '添加',
+                    title: 'Add inbound',
+                    okText: 'Add',
                     confirm: async (inbound, dbInbound) => {
                         inModal.loading();
                         await this.addInbound(inbound, dbInbound);
@@ -287,7 +287,7 @@
                         this.clipboard = new ClipboardJS('.btn', {
                             text: () => location.href + "/subscribe",
                         });
-                        this.clipboard.on('success', () => app.$message.success('复制成功'));
+                        this.clipboard.on('success', () => app.$message.success('Copied to clipboard'));
                     });
                 }
             },
@@ -333,17 +333,17 @@
 
                         await this.addInbound(inbound, dbInbound);
                     }
-                    app.$message.success('导入数据成功');
+                    app.$message.success('Import data succeed');
                 }
                 catch(e){
-                    app.$message.error('导入数据失败: ' + e.message);
+                    app.$message.error('Import data failed: ' + e.message);
                 }
             },
             openEditInbound(dbInbound) {
                 const inbound = dbInbound.toInbound();
                 inModal.show({
-                    title: '修改入站',
-                    okText: '修改',
+                    title: 'Modify inbound',
+                    okText: 'Modify',
                     inbound: inbound,
                     dbInbound: dbInbound,
                     confirm: async (inbound, dbInbound) => {
@@ -391,10 +391,10 @@
             },
             resetTraffic(dbInbound) {
                 this.$confirm({
-                    title: '重置流量',
-                    content: '确定要重置流量吗?',
-                    okText: '重置',
-                    cancelText: '取消',
+                    title: 'Reset traffic',
+                    content: 'Are you sure to reset traffic?',
+                    okText: 'Reset',
+                    cancelText: 'Cancel',
                     onOk: () => {
                         const inbound = dbInbound.toInbound();
                         dbInbound.up = 0;
@@ -405,16 +405,16 @@
             },
             delInbound(dbInbound) {
                 this.$confirm({
-                    title: '删除入站',
-                    content: '确定要删除入站吗?',
-                    okText: '删除',
-                    cancelText: '取消',
+                    title: 'Delete inbound',
+                    content: 'Are you sure to delete inbound?',
+                    okText: 'Delete',
+                    cancelText: 'Cancel',
                     onOk: () => this.submit('/xui/inbound/del/' + dbInbound.id),
                 });
             },
             showQrcode(dbInbound) {
                 const link = dbInbound.genLink();
-                qrModal.show('二维码', link);
+                qrModal.show('QR Code', link);
             },
             showInfo(dbInbound) {
                 infoModal.show(dbInbound);
