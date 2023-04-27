@@ -86,7 +86,7 @@ confirm() {
 }
 
 confirm_restart() {
-    confirm "Do you agree to restart panel, restart panel will also restart xray" "y"
+    confirm "Do you agree to restart panel, restart panel will also restart xray" " y"
     if [[ $? == 0 ]]; then
         restart
     else
@@ -111,7 +111,7 @@ install() {
 }
 
 update() {
-    confirm "This will update x-ui to the latest version, data will not lose, do you want to continue?" "n"
+    confirm "This will update x-ui to the latest version, data will not lose, do you want to continue?" " n"
     if [[ $? != 0 ]]; then
         LOGE "Cancelled"
         if [[ $# == 0 ]]; then
@@ -127,7 +127,7 @@ update() {
 }
 
 uninstall() {
-    confirm "Are you sure to uninstall panel (xray will also be uninstalled)?" "n"
+    confirm "Are you sure to uninstall panel (xray will also be uninstalled)?" " n"
     if [[ $? != 0 ]]; then
         if [[ $# == 0 ]]; then
             show_menu
@@ -152,7 +152,7 @@ uninstall() {
 }
 
 reset_user() {
-    confirm "Are you sure to reset account and password to 'admin'?" "n"
+    confirm "Are you sure to reset account and password to 'admin'?" " n"
     if [[ $? != 0 ]]; then
         if [[ $# == 0 ]]; then
             show_menu
@@ -165,7 +165,7 @@ reset_user() {
 }
 
 reset_config() {
-    confirm "Are you sure to reset all the panel settings (account data will not lose, account and password will not change)?" "n"
+    confirm "Are you sure to reset all the panel settings (account data will not lose, account and password will not change)?" " n"
     if [[ $? != 0 ]]; then
         if [[ $# == 0 ]]; then
             show_menu
@@ -422,7 +422,7 @@ ssl_cert_issue() {
     LOGI "2. You know Cloudflare Global API Key"
     LOGI "3. Domain already parse to current host by Cloudflare"
     LOGI "4. This script default save ssl certificate file to '/root/cert'"
-    confirm "Continue [y/n]" "y"
+    confirm "Continue [y/n]" " y"
     if [ $? -eq 0 ]; then
         cd ~
         LOGI "Install Acme script"
