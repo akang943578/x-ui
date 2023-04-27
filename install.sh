@@ -6,7 +6,7 @@ yellow='\033[0;33m'
 plain='\033[0m'
 
 # check root
-[[ $EUID -ne 0 ]] && echo -e "${red}Error：${plain} You must run this script as root user!\n" && exit 1
+[[ $EUID -ne 0 ]] && echo -e "${red}Error:${plain} You must run this script as root user!\n" && exit 1
 
 # check os
 if [[ -f /etc/redhat-release ]]; then
@@ -17,6 +17,8 @@ elif cat /etc/issue | grep -Eqi "ubuntu"; then
     release="ubuntu"
 elif cat /etc/issue | grep -Eqi "centos|red hat|redhat"; then
     release="centos"
+elif uname -r | grep -Eqi "amzn"; then
+    release="Amazon Linux"
 elif cat /proc/version | grep -Eqi "debian"; then
     release="debian"
 elif cat /proc/version | grep -Eqi "ubuntu"; then
@@ -26,6 +28,8 @@ elif cat /proc/version | grep -Eqi "centos|red hat|redhat"; then
 else
     echo -e "${red}Not detected system version, please contact the author!${plain}\n" && exit 1
 fi
+
+echo "Linux release: ${release}"
 
 arch=$(arch)
 
@@ -57,6 +61,8 @@ if [[ -z "$os_version" && -f /etc/lsb-release ]]; then
     os_version=$(awk -F'[= ."]+' '/DISTRIB_RELEASE/{print $2}' /etc/lsb-release)
 fi
 
+echo "OS Version: ${os_version}"
+
 if [[ x"${release}" == x"centos" ]]; then
     if [[ ${os_version} -le 6 ]]; then
         echo -e "${red}Please use CentOS 7 or higher version!${plain}\n" && exit 1
@@ -69,10 +75,14 @@ elif [[ x"${release}" == x"debian" ]]; then
     if [[ ${os_version} -lt 8 ]]; then
         echo -e "${red}Please use Debian 8 or higher version!${plain}\n" && exit 1
     fi
+elif [[ x"${release}" == x"Amazon Linex" ]]; then
+    if [[ ${os_version} -lt 2 ]]; then
+        echo -e "${red}Please use Amazon Linux 2 or higher version!${plain}\n" && exit 1
+    fi
 fi
 
 install_base() {
-    if [[ x"${release}" == x"centos" ]]; then
+    if [[ x"${release}" == x"centos" ]] || [[ x"${release}" == x"Amazon Linux" ]]; then
         yum install wget curl tar -y
     else
         apt install wget curl tar -y
@@ -100,7 +110,7 @@ config_after_install() {
     fi
 }
 
-install_x-ui() {
+install_x_ui() {
     systemctl stop x-ui
     cd /usr/local/ || exit
 
@@ -165,4 +175,4 @@ install_x-ui() {
 
 echo -e "${green}start install${plain}"
 install_base
-install_x-ui $1
+install_x_ui $1
