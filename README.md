@@ -2,7 +2,9 @@
 
 支持多协议多用户的 xray 面板
 
-相比较原版，增加了对 Amazon Linux 2 主机的支持，并且界面语言切换为英文。
+Forked from: https://github.com/vaxilu/x-ui
+
+相比较原版，增加了对 Amazon Linux 2 主机的支持，并且界面语言切换为英文。且详情页面添加了一些功能。
 
 # 功能介绍
 
