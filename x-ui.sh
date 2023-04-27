@@ -100,7 +100,7 @@ before_show_menu() {
 }
 
 install() {
-    bash <(curl -Ls https://github.com/akang943578/x-ui/raw/main/install.sh)
+    bash <(curl -Ls https://raw.githubusercontent.com/akang943578/x-ui/main/install.sh)
     if [[ $? == 0 ]]; then
         if [[ $# == 0 ]]; then
             start
@@ -119,7 +119,7 @@ update() {
         fi
         return 0
     fi
-    bash <(curl -Ls https://github.com/akang943578/x-ui/raw/main/install.sh)
+    bash <(curl -Ls https://raw.githubusercontent.com/akang943578/x-ui/main/install.sh)
     if [[ $? == 0 ]]; then
         LOGI "Update completed, panel restarted"
         exit 0
@@ -308,7 +308,7 @@ install_bbr() {
 }
 
 update_shell() {
-    wget -O /usr/bin/x-ui -N --no-check-certificate https://github.com/akang943578/x-ui/raw/main/x-ui.sh
+    wget -O /usr/bin/x-ui -N --no-check-certificate https://raw.githubusercontent.com/akang943578/x-ui/main/x-ui.sh
     if [[ $? != 0 ]]; then
         echo ""
         LOGE "Download script failed, please check if your network can access Github or not"

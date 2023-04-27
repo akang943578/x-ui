@@ -19,7 +19,7 @@
 # 安装&升级
 
 ```
-bash <(curl -Ls https://github.com/akang943578/x-ui/raw/main/install.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/akang943578/x-ui/main/install.sh)
 ```
 
 ## 手动安装&升级
