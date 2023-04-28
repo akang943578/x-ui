@@ -115,20 +115,20 @@ install_x_ui() {
     cd /usr/local/ || exit
 
     if [ $# == 0 ]; then
-        last_version=$(curl -Ls "https://api.github.com/repos/akang943578/x-ui/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+        last_version=$(curl -Ls "https://api.github.com/repos/vaxilu/x-ui/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
         if [[ ! -n "$last_version" ]]; then
             echo -e "${red}Failed at detect x-ui version, perhaps exceed limitation of Github API, please try again later, or set x-ui version manually at install.${plain}"
             exit 1
         fi
         echo -e "Detected latest x-ui version: ${last_version}, start install..."
-        wget -N --no-check-certificate -O /usr/local/x-ui-linux-${arch}.tar.gz https://github.com/akang943578/x-ui/releases/download/${last_version}/x-ui-linux-${arch}.tar.gz
+        wget -N --no-check-certificate -O /usr/local/x-ui-linux-${arch}.tar.gz https://github.com/vaxilu/x-ui/releases/download/${last_version}/x-ui-linux-${arch}.tar.gz
         if [[ $? -ne 0 ]]; then
             echo -e "${red}Failed at download x-ui, please make sure your host can access Github files.${plain}"
             exit 1
         fi
     else
         last_version=$1
-        url="https://github.com/akang943578/x-ui/releases/download/${last_version}/x-ui-linux-${arch}.tar.gz"
+        url="https://github.com/vaxilu/x-ui/releases/download/${last_version}/x-ui-linux-${arch}.tar.gz"
         echo -e "Start install x-ui v$1"
         wget -N --no-check-certificate -O /usr/local/x-ui-linux-${arch}.tar.gz ${url}
         if [[ $? -ne 0 ]]; then
